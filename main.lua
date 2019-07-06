@@ -231,6 +231,7 @@ local function createGameObject( x, y, objectType )
 end
 
 local function levelGen( noItems )
+
 	while lastY > (player.y - fullh * 0.75) do
 		createGameObject( centerX + mRand( -200, 200 ) , lastY - mRand( 100, 300 ), "platform" )		
 
@@ -288,39 +289,37 @@ function player.enterFrame( self )
 	return false
 end; listen("enterFrame",player)
 -- 
---function player.onTwoTouchLeft( self, event )
-	--if( event.phase == "began" ) then
-		--self.moveLeft = 1
-	--elseif( event.phase == "ended" ) then
-	--self.moveLeft = 0
-	--end
---end; listen( "onTwoTouchLeft", player )
+function player.onTwoTouchLeft( self, event )
+	if( event.phase == "began" ) then
+		self.moveLeft = 1
+	elseif( event.phase == "ended" ) then
+	self.moveLeft = 0
+	end
+end; listen( "onTwoTouchLeft", player )
 --
---function player.onTwoTouchRight( self, event )
-	--if( event.phase == "began" ) then
-		--self.moveRight = 1
-	--elseif( event.phase == "ended" ) then
-	--self.moveRight = 0
-	--end
---end; 
+function player.onTwoTouchRight( self, event )
+	if( event.phase == "began" ) then
+		self.moveRight = 1
+	elseif( event.phase == "ended" ) then
+	self.moveRight = 0
+	end
+end; 
+
 
 function accelerometerCall(e)
 	px, py = player:getLinearVelocity()
-    player:setLinearVelocity(e.xGravity * 10000, py)
-    
-    if(player.py<bottom) then 
-        gameIsRunning = false
-			self:removeEventListener("preCollision")
-			self:removeEventListener("collision")
-            scoreLabel:setFillColor(1,0,0)
-            
-    end
-
+	player:setLinearVelocity(e.xGravity * 10000, py)
 end
+--------------------------per stampare la posizione del personaggio---faccio prove per vedere come ricavarla
+--local position = display.newText( where, display.contentCenterX, 20, native.systemFont, 40 )
+--position:setFillColor( 0, 0, 0 )
+--------------------------
+
+
 
 Runtime:addEventListener("accelerometer", accelerometerCall)
 
---listen( "onTwoTouchRight", player )
+listen( "onTwoTouchRight", player )
 --
 createGameObject( player.x, player.y + 100, "platform" )
 levelGen(true)
