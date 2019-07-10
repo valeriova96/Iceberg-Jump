@@ -1,8 +1,3 @@
------------------------------------------------------------------------------------------
---
--- main.lua
---
------------------------------------------------------------------------------------------
 io.output():setvbuf("no")
 display.setStatusBar(display.HiddenStatusBar)
 
@@ -20,9 +15,11 @@ background.y = display.contentCenterY
 local isValid = function ( obj ) 
 	return ( obj and obj.removeSelf and type(obj.removeSelf) == "function" )
 end
+
 local listen = function( name, listener ) 
 	Runtime:addEventListener( name, listener ) 
 end
+
 local autoIgnore = function( name, obj ) 
    if( not isValid( obj ) ) then
       ignore( name, obj )
@@ -31,6 +28,7 @@ local autoIgnore = function( name, obj )
    end
    return false 
 end
+
 local post = function( name, params )
    params = params or {}
    local event = {}
@@ -65,14 +63,28 @@ local cameraOffset  = 25
 local objects		  = {}
 local pickupCount   = 0
 local distance      = 0
+local score = 0
+--piccolo counter per capire se le piattaforme nell'array
+--vengono effettivamente aggiunte/rimosse
+local p = 0
+local numberOfPlatform = display.newText("Platforms: " .. p, centerX + 200, top + 30, "Oxygen-Bold.ttf", 36 )
 --
+local player
+local platformsTable = {}
+local springsTable = {}
+local coinsTable = {}
+local spikesTable = {}
+local layers
+local lastY
+local lastX
 
 function display.newGroup2( insertInto )
 	local group = display.newGroup()
 	if( insertInto ) then insertInto:insert( group ) end
 	return group
 end
-local layers = display.newGroup2()
+
+layers = display.newGroup2()
 layers.underlay = display.newGroup2( layers )
 layers.world = display.newGroup2( layers )
 layers.background = display.newGroup2( layers.world )
@@ -86,6 +98,7 @@ local function onTouch( self, event )
 	Runtime:dispatchEvent( event ) 
 	return false
 end
+
 local leftTouch = newImageRect( layers.underlay, "fillT.png", fullw/2, fullh )
 leftTouch.anchorX = 0
 leftTouch.x = left
@@ -93,6 +106,7 @@ leftTouch.y = centerY
 leftTouch.eventName = "onTwoTouchLeft"
 leftTouch.touch = onTouch
 leftTouch:addEventListener("touch")
+
 local rightTouch = newImageRect( layers.underlay, "fillT.png", fullw/2, fullh )
 rightTouch.anchorX = 1
 rightTouch.x = right
@@ -102,7 +116,7 @@ rightTouch.touch = onTouch
 rightTouch:addEventListener("touch")
 --
 
-local player = newImageRect( layers.content, "player.png", 66, 92 )
+player = newImageRect( layers.content, "player.png", 66, 92 )
 player.x = centerX
 player.y = centerY + 100
 player.moveLeft = 0
@@ -115,17 +129,13 @@ wrapProxy.x = player.x
 wrapProxy.y = player.y
 
 
-scoreBack = newRect( layers.overlay, centerX, top + 30, 300, 60 )
-scoreBack:setFillColor( 0.125, 0.125, 0.125 )
+scoreText = display.newText("Score: " .. score, centerX, top + 30, "Oxygen-Bold.ttf", 36 )
+scoreText:setFillColor(1,1,0)
 
-
-local scoreLabel = display.newText( layers.overlay, 0, scoreBack.x, scoreBack.y, "Oxygen-Bold.ttf", 36 )
-scoreLabel:setFillColor(1,1,0)
-
-function scoreLabel:update()
-	self.text = pickupCount + distance
+function scoreText:update()
+	self.text = "Score: " .. pickupCount + distance
 end
---
+
 function player.preCollision( self, event )
 	local contact 		= event.contact
 	local other 		= event.other
@@ -138,7 +148,9 @@ function player.preCollision( self, event )
 		end
 	end	
 	return false
-end; player:addEventListener("preCollision")
+end
+
+player:addEventListener("preCollision")
 --
 function player.collision( self, event )
 	local other 		= event.other
@@ -148,7 +160,7 @@ function player.collision( self, event )
 			gameIsRunning = false
 			self:removeEventListener("preCollision")
 			self:removeEventListener("collision")
-			scoreLabel:setFillColor(1,0,0)
+			scoreText:setFillColor(1,0,0)
 			--nextFrame(
 			timer.performWithDelay( 1,
 				function()
@@ -158,8 +170,19 @@ function player.collision( self, event )
 		
 		elseif( other.isPickup ) then
 			pickupCount = pickupCount + 100
-			scoreLabel:update()
+			scoreText:update()
 			display.remove(other)
+			for i = #coinsTable, 1, -1 do
+
+				local thisCoin = coinsTable[i]
+		 
+				if ( thisCoin == other )
+				then
+					display.remove( thisCoin )
+					table.remove( coinsTable, i )
+				end
+		 
+			end
 		
 		elseif( other.isSpring and not other.open and vy > 0 ) then
 			self:setLinearVelocity( vx, -jumpSpeed * 1.25 )
@@ -169,14 +192,27 @@ function player.collision( self, event )
 		
 		elseif( other.isPlatform and vy > 0 ) then
 			self:setLinearVelocity( vx, -jumpSpeed  )
+
+		--elseif(player.y > 100 ) then
+		    --gameIsRunning = false
+		    --self:removeEventListener("preCollision")
+		    --self:removeEventListener("collision")
+		    --scoreText:setFillColor(1,0,0)
+		    --timer.performWithDelay( 1,
+			--function()
+				--self.isSensor = true
+				--self:applyAngularImpulse( mRand( -360, 360 ) )
+			--end )
 		end
+
 	end
+
 	return false
-end; 
+
+end
+
 player:addEventListener("collision")
---
-local lastY
-local lastX
+
 local function createGameObject( x, y, objectType )
 	x = x or lastX
 	y = y or lastY
@@ -192,6 +228,12 @@ local function createGameObject( x, y, objectType )
 		physics.addBody( obj, "static", { bounce = 0 } )
 		lastX = x
 		lastY = y
+		table.insert( platformsTable, obj )
+		--piccolo counter per capire se le piattaforme nell'array
+		--vengono effettivamente aggiunte/rimosse
+		p = p + 1
+		numberOfPlatform.text = "Platforms: " .. p
+		
 
 	elseif( objectType == "spring" ) then
 		
@@ -201,6 +243,7 @@ local function createGameObject( x, y, objectType )
 		obj.isSpring = true
 		obj.anchorY = 1
 		physics.addBody( obj, "static", { bounce = 0, shape = {-35, 0, 35, 0, 35, 35, -35, 35 } } )
+		table.insert( springsTable, obj )
 	
 	elseif( objectType == "pickup" ) then
 		
@@ -211,6 +254,7 @@ local function createGameObject( x, y, objectType )
 		obj.anchorY = 1
 		physics.addBody( obj, "static", { bounce = 0 } )
 		obj.isSensor = true
+		table.insert( coinsTable, obj )
 	
 	elseif( objectType == "danger" ) then
 		
@@ -221,6 +265,7 @@ local function createGameObject( x, y, objectType )
 		obj.anchorY = 1
 		physics.addBody( obj, "static", { bounce = 0, shape = {-35, 0, 35, 0, 35, 35, -35, 35 } } )
 		obj.isSensor = true
+		table.insert( spikesTable, obj )
 		
 	end
 	--
@@ -241,6 +286,26 @@ local function levelGen( noItems )
 			createGameObject( nil, nil, items[mRand(1,#items)] )
 		end
 	end
+
+	-- Rimuovo le piattaforme che sono sotto la visuale dello schermo
+    for i = #platformsTable, 1, -1 do
+
+        local thisPlatform = platformsTable[i]
+ 
+		if ( thisPlatform.y > centerY+player.y)
+		then
+			pY = thisPlatform.y
+            display.remove( thisPlatform )
+			table.remove( platformsTable, i )
+			--piccolo counter per capire se le piattaforme nell'array
+		    --vengono effettivamente aggiunte/rimosse
+			p = p - 1
+			numberOfPlatform.text = "Platforms: " .. p
+			break
+        end
+ 
+	end
+
 end
 --
 function player.enterFrame( self )	
@@ -258,7 +323,7 @@ function player.enterFrame( self )
 		local dist = math.round(self.minY - self.y)	-- same result for base case, but not same as SSK version
 		if( dist > distance ) then 
 			distance = dist 
-			scoreLabel:update()
+			scoreText:update()
 		end
 		--
 		wrapProxy.y = self.y
@@ -287,39 +352,40 @@ function player.enterFrame( self )
 		self:setLinearVelocity( vx, vy )
 	end
 	return false
-end; listen("enterFrame",player)
--- 
+end; 
+
+listen("enterFrame",player)
+
 function player.onTwoTouchLeft( self, event )
 	if( event.phase == "began" ) then
 		self.moveLeft = 1
 	elseif( event.phase == "ended" ) then
 	self.moveLeft = 0
 	end
-end; listen( "onTwoTouchLeft", player )
---
+end
+
+listen( "onTwoTouchLeft", player )
+
 function player.onTwoTouchRight( self, event )
 	if( event.phase == "began" ) then
 		self.moveRight = 1
 	elseif( event.phase == "ended" ) then
 	self.moveRight = 0
 	end
-end; 
-
-
-function accelerometerCall(e)
-	px, py = player:getLinearVelocity()
-	player:setLinearVelocity(e.xGravity * 10000, py)
 end
---------------------------per stampare la posizione del personaggio---faccio prove per vedere come ricavarla
---local position = display.newText( where, display.contentCenterX, 20, native.systemFont, 40 )
---position:setFillColor( 0, 0, 0 )
---------------------------
-
-
-
-Runtime:addEventListener("accelerometer", accelerometerCall)
 
 listen( "onTwoTouchRight", player )
+
+
+
+
+--piccolo counter per capire se le piattaforme nell'array
+--vengono effettivamente aggiunte/rimosse
+local function updateP()
+	numberOfPlatform.text = "Platforms: " .. p
+end
+
 --
 createGameObject( player.x, player.y + 100, "platform" )
 levelGen(true)
+
