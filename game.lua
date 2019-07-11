@@ -64,10 +64,7 @@ local objects		  = {}
 local pickupCount   = 0
 local distance      = 0
 local score = 0
---piccolo counter per capire se le piattaforme nell'array
---vengono effettivamente aggiunte/rimosse
-local p = 0
-local numberOfPlatform = display.newText("Platforms: " .. p, centerX + 200, top + 30, "Oxygen-Bold.ttf", 36 )
+
 --
 local player
 local platformsTable = {}
@@ -119,6 +116,12 @@ rightTouch:addEventListener("touch")
 player = newImageRect( layers.content, "player.png", 66, 92 )
 player.x = centerX
 player.y = centerY + 100
+
+
+local pyrY = player.y
+
+
+
 player.moveLeft = 0
 player.moveRight = 0
 physics.addBody( player, "dynamic", { bounce = 0.1 } )
@@ -137,6 +140,7 @@ function scoreText:update()
 end
 
 function player.preCollision( self, event )
+	pyrY = self.y
 	local contact 		= event.contact
 	local other 		= event.other
 	if( other.isDanger or other.isPickup ) then
@@ -144,6 +148,7 @@ function player.preCollision( self, event )
 	elseif( contact and contact.isEnabled ) then
 		if( (self.y - other.y) > -(self.contentHeight/2 + other.contentHeight/2 - 1) ) then
 			contact.isEnabled = false
+			
 			
 		end
 	end	
@@ -166,6 +171,7 @@ function player.collision( self, event )
 				function()
 					self.isSensor = true
 					self:applyAngularImpulse( mRand( -360, 360 ) )
+					physics.stop(self)
 				end )
 		
 		elseif( other.isPickup ) then
@@ -192,17 +198,6 @@ function player.collision( self, event )
 		
 		elseif( other.isPlatform and vy > 0 ) then
 			self:setLinearVelocity( vx, -jumpSpeed  )
-
-		--elseif(player.y > 100 ) then
-		    --gameIsRunning = false
-		    --self:removeEventListener("preCollision")
-		    --self:removeEventListener("collision")
-		    --scoreText:setFillColor(1,0,0)
-		    --timer.performWithDelay( 1,
-			--function()
-				--self.isSensor = true
-				--self:applyAngularImpulse( mRand( -360, 360 ) )
-			--end )
 		end
 
 	end
@@ -229,10 +224,6 @@ local function createGameObject( x, y, objectType )
 		lastX = x
 		lastY = y
 		table.insert( platformsTable, obj )
-		--piccolo counter per capire se le piattaforme nell'array
-		--vengono effettivamente aggiunte/rimosse
-		p = p + 1
-		numberOfPlatform.text = "Platforms: " .. p
 		
 
 	elseif( objectType == "spring" ) then
@@ -294,13 +285,21 @@ local function levelGen( noItems )
  
 		if ( thisPlatform.y > centerY+player.y)
 		then
-			pY = thisPlatform.y
             display.remove( thisPlatform )
 			table.remove( platformsTable, i )
-			--piccolo counter per capire se le piattaforme nell'array
-		    --vengono effettivamente aggiunte/rimosse
-			p = p - 1
-			numberOfPlatform.text = "Platforms: " .. p
+			break
+        end
+ 
+	end
+	-- Rimuovo le molle che sono sotto la visuale dello schermo
+    for i = #springsTable, 1, -1 do
+
+        local thisSpring = springsTable[i]
+ 
+		if ( thisSpring.y > centerY+player.y)
+		then
+            display.remove( thisSpring )
+			table.remove( springsTable, i )
 			break
         end
  
@@ -309,6 +308,21 @@ local function levelGen( noItems )
 end
 --
 function player.enterFrame( self )	
+	while(gameIsRunning==true) do
+
+	if( self.y > pyrY + 1000) then
+		gameIsRunning = false
+		self:removeEventListener("preCollision")
+		self:removeEventListener("collision")
+		scoreText:setFillColor(1,0,0)
+		--nextFrame(
+		timer.performWithDelay( 1,
+		function()
+			self.isSensor = true
+			self:applyAngularImpulse( mRand( -360, 360 ) )
+			physics.stop(self)
+			end )
+	end
 	if( not autoIgnore( "enterFrame", self ) ) then 
 		self.minY = self.minY or self.y
 		self.lastY = self.lastY or self.y
@@ -352,7 +366,8 @@ function player.enterFrame( self )
 		self:setLinearVelocity( vx, vy )
 	end
 	return false
-end; 
+    end
+end
 
 listen("enterFrame",player)
 
@@ -375,15 +390,6 @@ function player.onTwoTouchRight( self, event )
 end
 
 listen( "onTwoTouchRight", player )
-
-
-
-
---piccolo counter per capire se le piattaforme nell'array
---vengono effettivamente aggiunte/rimosse
-local function updateP()
-	numberOfPlatform.text = "Platforms: " .. p
-end
 
 --
 createGameObject( player.x, player.y + 100, "platform" )
