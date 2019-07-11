@@ -142,7 +142,7 @@ end
 
 local function endGame()
 	composer.setVariable( "finalScore", pickupCount+distance )
-	composer.gotoScene( "highscores", { time=300, effect="crossFade" } )
+	composer.gotoScene( "gameover", { time=300, effect="crossFade" } )
 end
 
 function player.preCollision( self, event )
