@@ -61,6 +61,8 @@ function scene:create( event )
     highscores:saveScores( scoresTable )
 	----
 	-- Composing screen texts and buttons --
+
+	-- Next function show ranking position on gameover with a blinking text
 	--local rankPosition = display.newText( sceneGroup,
 	--	"#" .. highscores:findLastHighscorePos( scoresTable ) .. " in classifica", 
 	--	display.contentCenterX, display.contentCenterY + 20, native.systemFont, 44 )
@@ -68,11 +70,11 @@ function scene:create( event )
 	--transition.blink( rankPosition, { time=2000 } )
 
 
-	local highscoresButton = display.newText( sceneGroup, "Highscores", display.contentCenterX, 850, native.systemFont, 44 )
+	local highscoresButton = display.newText( sceneGroup, "Highscores", display.contentCenterX, 930, native.systemFont, 44 )
     highscoresButton:setFillColor( 0.75, 0.78, 1 )
     highscoresButton:addEventListener( "tap", gotoHighscores )
 
-	local playButton = display.newText( sceneGroup, "Play", display.contentCenterX, 930, native.systemFont, 44 )
+	local playButton = display.newText( sceneGroup, "Play", display.contentCenterX, 850, native.systemFont, 44 )
     playButton:setFillColor( 0.75, 0.78, 1 )
     playButton:addEventListener( "tap", gotoGame )
 

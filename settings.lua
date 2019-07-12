@@ -1,24 +1,38 @@
--- Scene and libraries for menu scene --
+-- Scene and settings library imports
 local composer = require( "composer" )
 local scene = composer.newScene()
 
 local audioUtils = require( "audioUtils" )
 
--- -----------------------------------------------------------------------------------
--- Scene functions
--- -----------------------------------------------------------------------------------
+-- Functions and variables
+local sceneGroup
+local audioIcon
 
-local function gotoGame()
-	composer.gotoScene( "game", { time=300, effect="crossFade" } )
+local function gotoMenu(  )
+	composer.gotoScene( "menu", { time=300, effect="crossFade" } )
 end
 
-local function gotoHighScores()
-	composer.gotoScene( "highscores", { time=300, effect="crossFade" } )
+-- Changes audio value in settings file and refresh the icon
+local function changeAudioValue(  )
+	local oldValue = audioUtils:lastAudioValue(   )
+	
+	display.remove( audioIcon )
+	audioIcon = nil
+
+	if ( oldValue=="on" ) then
+		audioUtils:saveAudioValue( "off" )
+		audioIcon = display.newImageRect( sceneGroup, "audio-off-icon.png", 180, 180 )
+	else
+		audioUtils:saveAudioValue( "on" )
+		audioIcon = display.newImageRect( sceneGroup, "audio-on-icon.png", 180, 180 )
+	end
+	
+	audioIcon.x = display.contentCenterX
+	audioIcon.y = 400
+	audioIcon:addEventListener( "tap", changeAudioValue )
+
 end
 
-local function gotoSettings()
-	composer.gotoScene( "settings", { time=300, effect="crossFade" } )
-end
 
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
@@ -27,38 +41,33 @@ end
 -- create()
 function scene:create( event )
 
-	local sceneGroup = self.view
+	sceneGroup = self.view
 	-- Code here runs when the scene is first created but has not yet appeared on screen
-
+	
+	-- Composing screen texts and buttons --
 	local background = display.newImageRect( sceneGroup, "background.png", 800, 1400 )
 	background.x = display.contentCenterX
 	background.y = display.contentCenterY
 
-	local title = display.newImageRect( sceneGroup, "title.png", 620, 181 )
+	local title = display.newImageRect( sceneGroup, "settings.png", 620, 181 )
 	title.x = display.contentCenterX
-	title.y = 200
+	title.y = 100
 
-	local playButton = display.newText( sceneGroup, "Play", display.contentCenterX, 740, native.systemFont, 44 )
-	playButton:setFillColor( 0.82, 0.86, 1 )
+	local infoAudioText = display.newText( sceneGroup, "Clicca sull'icona per audio on/off", display.contentCenterX - 60, 250, native.systemFont, 32 )
+    infoAudioText:setFillColor( 0.75, 0.78, 1 )
+	audioIcon = display.newImageRect( sceneGroup,
+			"audio-" .. audioUtils:lastAudioValue() .. "-icon.png", 
+			180, 180 )
+	audioIcon.x = display.contentCenterX
+	audioIcon.y = 400
+	audioIcon:addEventListener( "tap", changeAudioValue )
 
-	local highScoresButton = display.newText( sceneGroup, "Highscores", display.contentCenterX, 830, native.systemFont, 44 )
-	highScoresButton:setFillColor( 0.75, 0.78, 1 )
+	-- TODO add player name options
 
-	local settingsButton = display.newText( sceneGroup, "Settings", display.contentCenterX, 920, native.systemFont, 44 )
-	settingsButton:setFillColor( 0.75, 0.78, 1 )
+	local menuButton = display.newText( sceneGroup, "Menu", display.contentCenterX, 930, native.systemFont, 44 )
+    menuButton:setFillColor( 0.75, 0.78, 1 )
+    menuButton:addEventListener( "tap", gotoMenu )
 
-	playButton:addEventListener( "tap", gotoGame )
-	highScoresButton:addEventListener( "tap", gotoHighScores )
-	settingsButton:addEventListener( "tap", gotoSettings )
-
-	-- Managing audio-setting file when application is first launched
-	local filePath = system.pathForFile( "audio-setting.json", system.DocumentsDirectory )
-	local file = io.open( filePath )
-	if file then -- file exists, application is NOT started for the first time
-		io.close( file )
-	else -- file does not exists, application is started for the first time
-		audioUtils:saveAudioValue( "on" ) -- default value for game audio is "on"
-	end
 end
 
 
@@ -89,7 +98,7 @@ function scene:hide( event )
 
 	elseif ( phase == "did" ) then
 		-- Code here runs immediately after the scene goes entirely off screen
-
+		composer.removeScene( "settings" )
 	end
 end
 

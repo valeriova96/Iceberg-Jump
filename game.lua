@@ -1,8 +1,11 @@
+-- Functions and libraries for game scene --
 io.output():setvbuf("no")
 display.setStatusBar(display.HiddenStatusBar)
 
 local composer = require( "composer" )
 local scene = composer.newScene()
+
+local audioUtils = require( "audioUtils" )
 
 local getTimer = system.getTimer
 local mRand = math.random
@@ -45,7 +48,6 @@ physics.start()
 physics.setGravity(0,20)
 
 
-
 local centerX  = display.contentCenterX
 local centerY  = display.contentCenterY
 local fullw  	= display.actualContentWidth
@@ -63,7 +65,6 @@ local objects		  = {}
 local pickupCount   = 0
 local distance      = 0
 local score = 0
-
 --
 local player
 local platformsTable = {}
@@ -73,11 +74,14 @@ local spikesTable = {}
 local layers
 local lastY
 local lastX
+--
+local audioIsEnabled  = audioUtils:lastAudioValue()
 local soundtrackSound = audio.loadStream( "soundtrack.wav" )
 local coinSound = audio.loadSound( "coin.wav" )
 local springSound = audio.loadSound( "spring.wav" )
 local jumpSound = audio.loadSound( "jump.wav" )
 local deathSound = audio.loadSound( "death.wav" )
+
 
 function display.newGroup2( insertInto )
 	local group = display.newGroup()
@@ -173,7 +177,9 @@ function player.collision( self, event )
 	if( event.phase == "began" ) then
 		local vx, vy = self:getLinearVelocity()
 		if( other.isDanger ) then
-			audio.play( deathSound )
+			if (audioIsEnabled == "on" ) then
+				audio.play( deathSound )
+			end
 			gameIsRunning = false
 			self:removeEventListener("preCollision")
 			self:removeEventListener("collision")
@@ -189,7 +195,9 @@ function player.collision( self, event )
 			timer.performWithDelay( 1400, endGame )
 
 		elseif( other.isPickup ) then
-			audio.play( coinSound )
+			if (audioIsEnabled == "on" ) then
+				audio.play( coinSound )
+			end
 			pickupCount = pickupCount + 100
 			scoreText:update()
 			display.remove(other)
@@ -206,14 +214,18 @@ function player.collision( self, event )
 			end
 		
 		elseif( other.isSpring and not other.open and vy > 0 ) then
-			audio.play( springSound )
+			if (audioIsEnabled == "on" ) then
+				audio.play( springSound )
+			end
 			self:setLinearVelocity( vx, -jumpSpeed * 1.25 )
 			other.open = true
 			
 			timer.performWithDelay( 50,  function() other.fill = { type = "image", filename = "springboardUp.png" } end )
 		
 		elseif( other.isPlatform and vy > 0 ) then
-			audio.play( jumpSound )
+			if (audioIsEnabled == "on" ) then
+				audio.play( jumpSound )
+			end
 			self:setLinearVelocity( vx, -jumpSpeed  )
 		end
 
@@ -328,7 +340,9 @@ function player.enterFrame( self )
 	while(gameIsRunning==true) do
 
 	if( self.y > pyrY + 1000) then
-		audio.play( deathSound )
+		if (audioIsEnabled == "on" ) then
+			audio.play( deathSound )
+		end
 		gameIsRunning = false
 		self:removeEventListener("preCollision")
 		self:removeEventListener("collision")
@@ -440,7 +454,9 @@ function scene:show( event )
 	elseif ( phase == "did" ) then
 		-- Code here runs when the scene is entirely on screen
 		-- Start the music!
-        audio.play( soundtrackSound, { channel=1, loops=-1 } )
+        if (audioIsEnabled == "on" ) then
+			audio.play( soundtrackSound, { channel=1, loops=-1 } )
+		end
 	end
 end
 
@@ -461,8 +477,10 @@ function scene:hide( event )
 		Runtime:removeEventListener( "onTwoTouchRight", player )
 		physics.stop()
 		composer.removeScene( "game" )
-		-- Stop the music!
-        audio.stop( 1 )
+		-- Stop the music! (only if it had previously started)
+		if (audioIsEnabled == "on" ) then
+			audio.stop( 1 )
+		end
 	end
 end
 
