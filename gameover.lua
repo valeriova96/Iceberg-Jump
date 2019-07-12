@@ -38,7 +38,7 @@ function scene:create( event )
 
 	local scoreMessage = display.newText( sceneGroup,
 		"Hai totalizzato " .. actualScore .. " punti", 
-		display.contentCenterX, display.contentCenterY - 40, native.systemFont, 44 )
+		display.contentCenterX, display.contentCenterY, native.systemFont, 44 )
 	scoreMessage:setFillColor(1,1,0)
 
 	-- Saving last game score --
@@ -56,19 +56,16 @@ function scene:create( event )
 	end
 	composer.setVariable("finalScore", 0)
 	-- Sort the table entries from highest to lowest
-    local function compare( a, b )
-        return a > b
-    end
-    table.sort( scoresTable, compare )
+    scoresTable = highscores:sortScores( scoresTable )
 	-- Save the updated scores
     highscores:saveScores( scoresTable )
 	----
 	-- Composing screen texts and buttons --
-	local rankPosition = display.newText( sceneGroup,
-		"#" .. highscores:findLastHighscorePos( scoresTable ) .. " in classifica", 
-		display.contentCenterX, display.contentCenterY + 20, native.systemFont, 44 )
-	rankPosition:setFillColor(1,1,0)
-	transition.blink( rankPosition, { time=2000 } )
+	--local rankPosition = display.newText( sceneGroup,
+	--	"#" .. highscores:findLastHighscorePos( scoresTable ) .. " in classifica", 
+	--	display.contentCenterX, display.contentCenterY + 20, native.systemFont, 44 )
+	--rankPosition:setFillColor(1,1,0)
+	--transition.blink( rankPosition, { time=2000 } )
 
 
 	local highscoresButton = display.newText( sceneGroup, "Highscores", display.contentCenterX, 850, native.systemFont, 44 )

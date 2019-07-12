@@ -74,6 +74,14 @@ function Highscores:findLastHighscorePos( scoresTable )
 	end
 	return -1
 end
+
+local function compare( a, b )
+	return a > b
+end
+function Highscores:sortScores( scoresTable )
+	table.sort( scoresTable, compare )
+	return scoresTable
+end
 ----
 
 return Highscores

@@ -27,13 +27,14 @@ function scene:create( event )
 	background.x = display.contentCenterX
 	background.y = display.contentCenterY
 
-	local title = display.newImageRect( sceneGroup, "highscore.png", 620, 181 )
+	local title = display.newImageRect( sceneGroup, "highscores.png", 620, 181 )
 	title.x = display.contentCenterX
 	title.y = 100
 
 	-- Loading high scores --
 	-- Load previous scores
     local scoresTable = highscores:loadScores()
+	scoresTable = highscores:sortScores( scoresTable )
 	-- Showing the first 10 scores
 	for i = 1, 10 do
         if ( scoresTable[i] ) then
