@@ -301,8 +301,14 @@ local function levelGen( noItems )
 		createGameObject( centerX + mRand( -200, 200 ) , lastY - mRand( 100, 300 ), "platform" )		
 
 		
-		if( not noItems and mRand( 1, 100 ) > 20 ) then
-			local items = { "danger", "pickup", "pickup", "spring", "spring", "spring"  }
+		if( not noItems and mRand( 1, 100 ) > 20 and pickupCount < 600) then
+			local items = { "danger", "pickup", "pickup", "spring", "spring" }
+			createGameObject( nil, nil, items[mRand(1,#items)] )
+		elseif	( not noItems and mRand( 1, 100 ) > 20 and pickupCount >= 600 and pickupCount <= 1600) then
+			local items = { "danger", "danger", "pickup", "spring", "pickup", "spring"  }
+			createGameObject( nil, nil, items[mRand(1,#items)] )
+		elseif	( not noItems and mRand( 1, 100 ) > 20 and pickupCount > 1600 ) then
+			local items = { "danger", "danger", "pickup", "spring", "danger", "spring" }
 			createGameObject( nil, nil, items[mRand(1,#items)] )
 		end
 	end
