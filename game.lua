@@ -327,7 +327,7 @@ end
 function player.enterFrame( self )	
 	while(gameIsRunning==true) do
 
-	if( self.y > pyrY + 400) then
+	if( self.y > pyrY + 1000) then
 		audio.play( deathSound )
 		gameIsRunning = false
 		self:removeEventListener("preCollision")
