@@ -40,6 +40,16 @@ local post = function( name, params )
    Runtime:dispatchEvent( event )
 end
 
+local function keyListener(event)
+
+	print( "entered" .. event.keyName )
+
+    if ( event.keyName == "back" ) then
+		-- handle the back key press
+		composer.gotoScene( "menu", { time=300, effect="crossFade" } )
+    end
+end
+
 -- =============================================================
 -- The Game (line count starts here)
 -- =============================================================
@@ -191,7 +201,10 @@ function player.collision( self, event )
 					self:applyAngularImpulse( mRand( -360, 360 ) )
 					--physics.stop(self)
 				end )
-			-- next line terminates game after collision
+			-- next lines terminates game after collision
+			if (audioIsEnabled == "on" ) then
+				audio.fade( { channel=1, time=1500 } )
+			end
 			timer.performWithDelay( 1400, endGame )
 
 		elseif( other.isPickup ) then
@@ -360,7 +373,10 @@ function player.enterFrame( self )
 				self:applyAngularImpulse( mRand( -360, 360 ) )
 				--physics.stop(self)
 			end )
-		-- next line terminates game after player is out of screen
+		-- next lines terminates game after player is out of screen
+		if (audioIsEnabled == "on" ) then
+			audio.fade( { channel=1, time=1500 } )
+		end
 		timer.performWithDelay( 1400, endGame )
 	end
 	if( not autoIgnore( "enterFrame", self ) ) then 
@@ -445,6 +461,7 @@ function scene:create( event )
 	local sceneGroup = self.view
 	-- Code here runs when the scene is first created but has not yet appeared on screen --
 	sceneGroup:insert(layers)
+	Runtime:addEventListener( "key", keyListener )
 end
 
 
@@ -461,7 +478,8 @@ function scene:show( event )
 		-- Code here runs when the scene is entirely on screen
 		-- Start the music!
         if (audioIsEnabled == "on" ) then
-			audio.play( soundtrackSound, { channel=1, loops=-1 } )
+			audio.play( soundtrackSound, { channel=1, loops=-1} )
+			audio.setVolume( 0.75, { channel=1 } )
 		end
 	end
 end
@@ -481,12 +499,13 @@ function scene:hide( event )
 		Runtime:removeEventListener( "enterFrame", player )
 		Runtime:removeEventListener( "onTwoTouchLeft", player )
 		Runtime:removeEventListener( "onTwoTouchRight", player )
+		Runtime:removeEventListener( "key", keyListener )
 		physics.stop()
-		composer.removeScene( "game" )
 		-- Stop the music! (only if it had previously started)
 		if (audioIsEnabled == "on" ) then
 			audio.stop( 1 )
 		end
+		composer.removeScene( "game" )
 	end
 end
 
