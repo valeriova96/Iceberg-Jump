@@ -60,11 +60,25 @@ function scene:create( event )
     end
 	-----
 	-- Composing screen button --
-	local menuBtn = display.newImageRect(sceneGroup, "menuBtn.png", 300, 120)
+	-- button has its own animation functions
+	local menuBtn = display.newImageRect(sceneGroup, "menuBtn.png", 280, 100)
 	menuBtn.x = display.contentCenterX
 	menuBtn.y = 950
+	local scaleInMenu
+	local scaleOffMenu
+	scaleOffMenu =
+			function() 
+				transition.scaleTo( menuBtn, { xScale=1.0, yScale=1.0, time=500, onComplete=scaleInMenu } )
+			end
+	scaleInMenu = 
+			function()
+				transition.scaleTo( menuBtn, { xScale=1.1, yScale=1.1, time=500, onComplete=scaleOffMenu } )
+			end
+
     menuBtn:addEventListener( "tap", gotoMenu )
 
+	-- starting animations...
+	scaleInMenu()
 end
 
 

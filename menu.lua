@@ -22,6 +22,14 @@ local function gotoSettings()
 	composer.gotoScene( "settings", { time=300, effect="crossFade" } )
 end
 
+local function rotateBack()
+	
+end
+
+local function rotateForward()
+
+end
+
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
@@ -32,6 +40,7 @@ function scene:create( event )
 	local sceneGroup = self.view
 	-- Code here runs when the scene is first created but has not yet appeared on screen
 
+	-- Composing scene background, title and buttons --
 	local background = display.newImageRect( sceneGroup, "background.png", 800, 1400 )
 	background.x = display.contentCenterX
 	background.y = display.contentCenterY
@@ -40,22 +49,58 @@ function scene:create( event )
 	title.x = display.contentCenterX
 	title.y = 200
 
-	local playBtn = display.newImageRect(sceneGroup, "play.png", 300, 120)
+	-- each button has its own animation functions
+	local playBtn = display.newImageRect(sceneGroup, "play.png", 280, 100)
 	playBtn.x = display.contentCenterX
 	playBtn.y = 680
+	local scaleInPlay
+	local scaleOffPlay
+	scaleOffPlay =
+			function() 
+				transition.scaleTo( playBtn, { xScale=1.0, yScale=1.0, time=500, onComplete=scaleInPlay } )
+			end
+	scaleInPlay = 
+			function()
+				transition.scaleTo( playBtn, { xScale=1.1, yScale=1.1, time=500, onComplete=scaleOffPlay } )
+			end
 
-	local highScoresBtn = display.newImageRect(sceneGroup, "highscoresBtn.png", 550, 120)
+	local highScoresBtn = display.newImageRect(sceneGroup, "highscoresBtn.png", 530, 100)
 	highScoresBtn.x = display.contentCenterX
 	highScoresBtn.y = 820
+	local scaleInHighScores
+	local scaleOffHighScores
+	scaleOffHighScores =
+			function() 
+				transition.scaleTo( highScoresBtn, { xScale=1.0, yScale=1.0, time=500, onComplete=scaleInHighScores } )
+			end
+	scaleInHighScores = 
+			function()
+				transition.scaleTo( highScoresBtn, { xScale=1.1, yScale=1.1, time=500, onComplete=scaleOffHighScores } )
+			end
 
-	local settingsBtn = display.newImageRect(sceneGroup, "settingsBtn.png", 450, 120)
+	local settingsBtn = display.newImageRect(sceneGroup, "settingsBtn.png", 430, 100)
 	settingsBtn.x = display.contentCenterX
 	settingsBtn.y = 960
+	local scaleInSettings
+	local scaleOffSettings
+	scaleOffSettings =
+			function() 
+				transition.scaleTo( settingsBtn, { xScale=1.0, yScale=1.0, time=500, onComplete=scaleInSettings } )
+			end
+	scaleInSettings = 
+			function()
+				transition.scaleTo( settingsBtn, { xScale=1.1, yScale=1.1, time=500, onComplete=scaleOffSettings } )
+			end
 
 	playBtn:addEventListener( "tap", gotoGame )
 	highScoresBtn:addEventListener( "tap", gotoHighScores )
 	settingsBtn:addEventListener( "tap", gotoSettings )
 
+	-- starting animations...
+	scaleInPlay()
+	scaleInHighScores()
+	scaleInSettings()
+	
 	-- Managing audio-setting and playername files when application is first launched
 	local filePath_audio = system.pathForFile( "audio-setting.json", system.DocumentsDirectory )
 	local filePath_playername = system.pathForFile( "playername.json", system.DocumentsDirectory )

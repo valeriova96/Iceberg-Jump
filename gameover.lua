@@ -76,15 +76,41 @@ function scene:create( event )
 	icecreamImage.x = display.contentCenterX
 	icecreamImage.y = display.contentCenterY + 120
 
-	local highScoresBtn = display.newImageRect(sceneGroup, "highscoresBtn.png", 550, 120)
+	-- each button has its own animation functions
+	local highScoresBtn = display.newImageRect(sceneGroup, "highscoresBtn.png", 530, 100)
 	highScoresBtn.x = display.contentCenterX
 	highScoresBtn.y = 900
-    highScoresBtn:addEventListener( "tap", gotoHighscores )
+    local scaleInHighScores
+	local scaleOffHighScores
+	scaleOffHighScores =
+			function() 
+				transition.scaleTo( highScoresBtn, { xScale=1.0, yScale=1.0, time=500, onComplete=scaleInHighScores } )
+			end
+	scaleInHighScores = 
+			function()
+				transition.scaleTo( highScoresBtn, { xScale=1.1, yScale=1.1, time=500, onComplete=scaleOffHighScores } )
+			end
 
-	local playBtn = display.newImageRect(sceneGroup, "play.png", 300, 120)
+	local playBtn = display.newImageRect(sceneGroup, "play.png", 280, 100)
 	playBtn.x = display.contentCenterX
 	playBtn.y = 780
-    playBtn:addEventListener( "tap", gotoGame )
+	local scaleInPlay
+	local scaleOffPlay
+	scaleOffPlay =
+			function() 
+				transition.scaleTo( playBtn, { xScale=1.0, yScale=1.0, time=500, onComplete=scaleInPlay } )
+			end
+	scaleInPlay = 
+			function()
+				transition.scaleTo( playBtn, { xScale=1.1, yScale=1.1, time=500, onComplete=scaleOffPlay } )
+			end
+    
+	highScoresBtn:addEventListener( "tap", gotoHighscores )
+	playBtn:addEventListener( "tap", gotoGame )
+
+	-- starting animations...
+	scaleInPlay()
+	scaleInHighScores()
 
 end
 

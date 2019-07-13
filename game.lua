@@ -49,7 +49,6 @@ local function keyListener(event)
             return true
         end
     end
- 
     -- IMPORTANT! Return false to indicate that this app is NOT overriding the received key
     -- This lets the operating system execute its default handling of the key
     return false
@@ -157,8 +156,15 @@ wrapProxy.x = player.x
 wrapProxy.y = player.y
 
 
-scoreText = display.newText( layers.overlay, "Score: " .. score, centerX, top + 30, "Oxygen-Bold.ttf", 36 )
-scoreText:setFillColor(1,1,0)
+scoreText = --display.newText( layers.overlay, "Score: " .. score, centerX, top + 30, "Oxygen-Bold.ttf", 36 )
+--scoreText:setFillColor(1,1,0)
+display.newEmbossedText( layers.overlay, "Score: " .. score, centerX, top + 30, "Oxygen-Bold.ttf", 36 )
+--display.newEmbossedText( [parent,] text, x, y, [width, height,] font, fontSize )
+scoreText:setFillColor( 1,1,0 )
+local color = {
+    highlight = { r=1, g=0, b=0 },
+    shadow = { r=0.3, g=0.3, b=0.3 } }
+scoreText:setEmbossColor( color )
 
 function scoreText:update()
 	self.text = "Score: " .. pickupCount + distance
