@@ -4,6 +4,8 @@ local scene = composer.newScene()
 
 local audioUtils = require( "audioUtils" )
 
+local playerUtils = require( "playerUtils" )
+
 -- -----------------------------------------------------------------------------------
 -- Scene functions
 -- -----------------------------------------------------------------------------------
@@ -51,14 +53,22 @@ function scene:create( event )
 	highScoresButton:addEventListener( "tap", gotoHighScores )
 	settingsButton:addEventListener( "tap", gotoSettings )
 
-	-- Managing audio-setting file when application is first launched
-	local filePath = system.pathForFile( "audio-setting.json", system.DocumentsDirectory )
-	local file = io.open( filePath )
-	if file then -- file exists, application is NOT started for the first time
-		io.close( file )
+	-- Managing audio-setting and playername files when application is first launched
+	local filePath_audio = system.pathForFile( "audio-setting.json", system.DocumentsDirectory )
+	local filePath_playername = system.pathForFile( "playername.json", system.DocumentsDirectory )
+	local file_audio = io.open( filePath_audio )
+	local file_playername = io.open( filePath_playername )
+	if file_audio then -- file exists, application is NOT started for the first time
+		io.close( file_audio )
 	else -- file does not exists, application is started for the first time
 		audioUtils:saveAudioValue( "on" ) -- default value for game audio is "on"
 	end
+	if file_playername then
+		io.close( file_playername )
+	else
+		playerUtils:savePlayerName( "player" ) -- default value for player name is "player"
+	end
+
 end
 
 

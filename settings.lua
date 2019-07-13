@@ -4,9 +4,12 @@ local scene = composer.newScene()
 
 local audioUtils = require( "audioUtils" )
 
+local playerUtils = require( "playerUtils" )
+
 -- Functions and variables
 local sceneGroup
 local audioIcon
+local inputTextField
 
 local function gotoMenu(  )
 	composer.gotoScene( "menu", { time=300, effect="crossFade" } )
@@ -31,6 +34,20 @@ local function changeAudioValue(  )
 	audioIcon.y = 400
 	audioIcon:addEventListener( "tap", changeAudioValue )
 
+end
+
+local function inputTextHandler( event )
+	if ( event.phase == "began" ) then
+		-- before editing phase
+		
+	elseif ( event.phase == "ended" or event.phase == "submitted" ) then
+		-- on text confirmation, editing phase terminated
+		playerUtils:savePlayerName( event.target.text )
+
+	elseif ( event.phase == "editing" ) then
+		-- during editing phase
+
+	end
 end
 
 
@@ -62,7 +79,8 @@ function scene:create( event )
 	audioIcon.y = 400
 	audioIcon:addEventListener( "tap", changeAudioValue )
 
-	-- TODO add player name options
+	local infoPlayernameText = display.newText( sceneGroup, "Clicca sul nickname per modificarlo", display.contentCenterX - 40, 560, native.systemFont, 32 )
+    infoPlayernameText:setFillColor( 0.75, 0.78, 1 )
 
 	local menuButton = display.newText( sceneGroup, "Menu", display.contentCenterX, 930, native.systemFont, 44 )
     menuButton:setFillColor( 0.75, 0.78, 1 )
@@ -82,7 +100,11 @@ function scene:show( event )
 
 	elseif ( phase == "did" ) then
 		-- Code here runs when the scene is entirely on screen
-
+		inputTextField = native.newTextField( display.contentCenterX - 93, 630, 400, 60 )
+		inputTextField:setTextColor( 0.75, 0.78, 1 )
+		inputTextField.text = playerUtils:getPlayerName(  )
+		inputTextField.hasBackground = false
+		inputTextField:addEventListener( "userInput", inputTextHandler )
 	end
 end
 
@@ -95,7 +117,7 @@ function scene:hide( event )
 
 	if ( phase == "will" ) then
 		-- Code here runs when the scene is on screen (but is about to go off screen)
-
+		inputTextField:removeSelf()
 	elseif ( phase == "did" ) then
 		-- Code here runs immediately after the scene goes entirely off screen
 		composer.removeScene( "settings" )

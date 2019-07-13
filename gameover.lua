@@ -1,12 +1,15 @@
 local composer = require( "composer" )
 local scene = composer.newScene()
 
+local highscores = require( "highscoresUtils" )
+
+local playerUtils = require( "playerUtils" )
+
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
 -- -----------------------------------------------------------------------------------
--- Initialize variables
-local highscores = require( "highscoresUtils" )
+-- Scene functions
 
 local function gotoGame()
     composer.gotoScene( "game", { time=300, effect="crossFade" } )
@@ -69,6 +72,9 @@ function scene:create( event )
 	--rankPosition:setFillColor(1,1,0)
 	--transition.blink( rankPosition, { time=2000 } )
 
+	local icecreamImage = display.newImageRect( sceneGroup, "coinGold.png", 120, 120 )
+	icecreamImage.x = display.contentCenterX
+	icecreamImage.y = display.contentCenterY + 120
 
 	local highscoresButton = display.newText( sceneGroup, "Highscores", display.contentCenterX, 930, native.systemFont, 44 )
     highscoresButton:setFillColor( 0.75, 0.78, 1 )

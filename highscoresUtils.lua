@@ -1,10 +1,11 @@
-----------------------------------------------------------------------
+------------------------------------------------------------------------
 -- A little library for those shared functions that manage highscores --
-----------------------------------------------------------------------
+------------------------------------------------------------------------
 
 -- Variables and libraries
 local Highscores = { }
 local json = require( "json" )
+local playerUtils = require( "playerUtils" )
 local filePath = system.pathForFile( "scores.json", system.DocumentsDirectory )
 
 
@@ -62,13 +63,14 @@ function Highscores:getPlayerName( score )
 	elseif ( score == 654 ) then
 		return "Arianna"
 	else
-		return "Io"
+		return playerUtils:getPlayerName(  )
 	end
 end
 
 function Highscores:findLastHighscorePos( scoresTable )
+	local playerName = playerUtils:getPlayerName(  )
 	for i = 1, #scoresTable do
-		if ( self:getPlayerName(scoresTable[i])=="Io" ) then
+		if ( self:getPlayerName(scoresTable[i])==playerName ) then
 			return i
 		end
 	end

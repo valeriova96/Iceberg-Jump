@@ -1,13 +1,15 @@
-
 local composer = require( "composer" )
 local scene = composer.newScene()
+
+local highscores = require( "highscoresUtils" )
+
+local playerUtils = require( "playerUtils" )
 
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
 -- -----------------------------------------------------------------------------------
--- Initialize variables
-local highscores = require( "highscoresUtils" )
+-- Scene functions
 
 local function gotoMenu()
     composer.gotoScene( "menu", { time=300, effect="crossFade" } )
@@ -36,6 +38,7 @@ function scene:create( event )
     local scoresTable = highscores:loadScores()
 	scoresTable = highscores:sortScores( scoresTable )
 	-- Showing the first 10 scores
+	local personalPlayerName = playerUtils:getPlayerName(  )
 	for i = 1, 10 do
         if ( scoresTable[i] ) then
 			local playerName = highscores:getPlayerName(scoresTable[i])
@@ -47,7 +50,7 @@ function scene:create( event )
             local playerScore = display.newText( sceneGroup, scoresTable[i], display.contentCenterX-30, yPos, native.systemFont, 36 )
             playerScore.anchorX = 0
 
-			if ( playerName == "Io" ) then
+			if ( playerName == personalPlayerName ) then
 				rankPlayer:setFillColor(1,1,0)
 				playerScore:setFillColor(1,1,0)
 				transition.blink( rankPlayer, { time=2000 } )
