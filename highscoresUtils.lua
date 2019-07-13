@@ -21,7 +21,7 @@ function Highscores:loadScores()
     end
  
     if ( scoresTable == nil or #scoresTable == 0 ) then
-        scoresTable = { 279, 1000, 500, 570, 190, 3000, 4000, 5000, 456, 654 } -- the default scoresTable
+        scoresTable = { 2790, 1600, 30543, 42768, 67100, 10205, 8978, 5060, 13456, 6540 } -- the default scoresTable
     end
 
 	return scoresTable
@@ -42,26 +42,26 @@ function Highscores:saveScores( scoresTable )
 end
 
 function Highscores:getPlayerName( score )
-	if ( score == 279 ) then
-		return "Gianmarco"
-	elseif ( score == 1000 ) then
+	if ( score == 2790 ) then
+		return "GianmaBig"
+	elseif ( score == 1600 ) then
 		return "Marco"
-	elseif ( score == 500 ) then
-		return "Elisa"
-	elseif ( score == 570 ) then
-		return "Giovanna"
-	elseif ( score == 190 ) then
-		return "Andrea"
-	elseif ( score == 3000 ) then
-		return "Luca"
-	elseif ( score == 4000 ) then
-		return "Stefano"
-	elseif ( score == 5000 ) then
-		return "Dario"
-	elseif ( score == 456 ) then
-		return "Giulia"
-	elseif ( score == 654 ) then
-		return "Arianna"
+	elseif ( score == 67100 ) then
+		return "elisa"
+	elseif ( score == 42768 ) then
+		return "Giova"
+	elseif ( score == 30543 ) then
+		return "ErMacina"
+	elseif ( score == 10205 ) then
+		return "alwayswin"
+	elseif ( score == 8978 ) then
+		return "stefy"
+	elseif ( score == 5060 ) then
+		return "DariOne"
+	elseif ( score == 13456 ) then
+		return "bigplayer"
+	elseif ( score == 6540 ) then
+		return "ari96"
 	else
 		return playerUtils:getPlayerName(  )
 	end
