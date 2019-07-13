@@ -40,18 +40,21 @@ function scene:create( event )
 	title.x = display.contentCenterX
 	title.y = 200
 
-	local playButton = display.newText( sceneGroup, "Play", display.contentCenterX, 740, native.systemFont, 44 )
-	playButton:setFillColor( 0.82, 0.86, 1 )
+	local playBtn = display.newImageRect(sceneGroup, "play.png", 300, 120)
+	playBtn.x = display.contentCenterX
+	playBtn.y = 680
 
-	local highScoresButton = display.newText( sceneGroup, "Highscores", display.contentCenterX, 830, native.systemFont, 44 )
-	highScoresButton:setFillColor( 0.75, 0.78, 1 )
+	local highScoresBtn = display.newImageRect(sceneGroup, "highscoresBtn.png", 550, 120)
+	highScoresBtn.x = display.contentCenterX
+	highScoresBtn.y = 820
 
-	local settingsButton = display.newText( sceneGroup, "Settings", display.contentCenterX, 920, native.systemFont, 44 )
-	settingsButton:setFillColor( 0.75, 0.78, 1 )
+	local settingsBtn = display.newImageRect(sceneGroup, "settingsBtn.png", 450, 120)
+	settingsBtn.x = display.contentCenterX
+	settingsBtn.y = 960
 
-	playButton:addEventListener( "tap", gotoGame )
-	highScoresButton:addEventListener( "tap", gotoHighScores )
-	settingsButton:addEventListener( "tap", gotoSettings )
+	playBtn:addEventListener( "tap", gotoGame )
+	highScoresBtn:addEventListener( "tap", gotoHighScores )
+	settingsBtn:addEventListener( "tap", gotoSettings )
 
 	-- Managing audio-setting and playername files when application is first launched
 	local filePath_audio = system.pathForFile( "audio-setting.json", system.DocumentsDirectory )

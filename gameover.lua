@@ -76,13 +76,15 @@ function scene:create( event )
 	icecreamImage.x = display.contentCenterX
 	icecreamImage.y = display.contentCenterY + 120
 
-	local highscoresButton = display.newText( sceneGroup, "Highscores", display.contentCenterX, 930, native.systemFont, 44 )
-    highscoresButton:setFillColor( 0.75, 0.78, 1 )
-    highscoresButton:addEventListener( "tap", gotoHighscores )
+	local highScoresBtn = display.newImageRect(sceneGroup, "highscoresBtn.png", 550, 120)
+	highScoresBtn.x = display.contentCenterX
+	highScoresBtn.y = 900
+    highScoresBtn:addEventListener( "tap", gotoHighscores )
 
-	local playButton = display.newText( sceneGroup, "Play", display.contentCenterX, 850, native.systemFont, 44 )
-    playButton:setFillColor( 0.75, 0.78, 1 )
-    playButton:addEventListener( "tap", gotoGame )
+	local playBtn = display.newImageRect(sceneGroup, "play.png", 300, 120)
+	playBtn.x = display.contentCenterX
+	playBtn.y = 780
+    playBtn:addEventListener( "tap", gotoGame )
 
 end
 

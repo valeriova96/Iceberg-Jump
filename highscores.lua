@@ -60,9 +60,10 @@ function scene:create( event )
     end
 	-----
 	-- Composing screen button --
-	local menuButton = display.newText( sceneGroup, "Menu", display.contentCenterX, 930, native.systemFont, 44 )
-    menuButton:setFillColor( 0.75, 0.78, 1 )
-    menuButton:addEventListener( "tap", gotoMenu )
+	local menuBtn = display.newImageRect(sceneGroup, "menuBtn.png", 300, 120)
+	menuBtn.x = display.contentCenterX
+	menuBtn.y = 950
+    menuBtn:addEventListener( "tap", gotoMenu )
 
 end
 

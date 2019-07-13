@@ -82,9 +82,10 @@ function scene:create( event )
 	local infoPlayernameText = display.newText( sceneGroup, "Clicca sul nickname per modificarlo", display.contentCenterX - 40, 560, native.systemFont, 32 )
     infoPlayernameText:setFillColor( 0.75, 0.78, 1 )
 
-	local menuButton = display.newText( sceneGroup, "Menu", display.contentCenterX, 930, native.systemFont, 44 )
-    menuButton:setFillColor( 0.75, 0.78, 1 )
-    menuButton:addEventListener( "tap", gotoMenu )
+	local menuBtn = display.newImageRect(sceneGroup, "menuBtn.png", 300, 120)
+	menuBtn.x = display.contentCenterX
+	menuBtn.y = 950
+    menuBtn:addEventListener( "tap", gotoMenu )
 
 end
 
