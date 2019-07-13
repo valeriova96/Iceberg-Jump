@@ -41,13 +41,18 @@ local post = function( name, params )
 end
 
 local function keyListener(event)
-
-	print( "entered" .. event.keyName )
-
     if ( event.keyName == "back" ) then
 		-- handle the back key press
-		composer.gotoScene( "menu", { time=300, effect="crossFade" } )
+
+		if ( system.getInfo("platform") == "android" ) then -- Return true to prevent it from backing out of the app
+			composer.gotoScene( "menu", { time=300, effect="crossFade" } )
+            return true
+        end
     end
+ 
+    -- IMPORTANT! Return false to indicate that this app is NOT overriding the received key
+    -- This lets the operating system execute its default handling of the key
+    return false
 end
 
 -- =============================================================
